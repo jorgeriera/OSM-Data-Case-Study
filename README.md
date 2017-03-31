@@ -1,12 +1,11 @@
-#OpenStreetMap Data Case Study
+# OpenStreetMap Data Case Study
 
 ### Map Area
-Charlotte, NC, United States
+Miami,Florida, United States
 
-- [https://www.openstreetmap.org/relation/177415](https://www.openstreetmap.org/relation/177415)
-- [http://metro.teczno.com/#charlotte](http://metro.teczno.com/#charlotte)
+- [https://www.openstreetmap.org/#map=12/25.7588/-80.2180](https://www.openstreetmap.org/#map=12/25.7588/-80.2180)
 
-This map is of my hometown, so I’m more interested to see what database querying reveals, and I’d like an opportunity to contribute to its improvement on OpenStreetMap.org.
+This is a map of my hometown from an open source mapping site called OpenStreetMap. Users are able to contribute to the map as they see fit. Given that it is a collaborative map, it is especially prone to human error. I would like to access the quality of the data for this subsect and determine if there are any necessary changes. 
 
 
 ## Problems Encountered in the Map
