@@ -103,7 +103,25 @@ I found a number of discrepancies in the naming conventions of street name value
 
 After singling out what had to be changed, I mapped out what each exception value should be replaced to and corrected the inconsistencies:
 
-"INSERT HERE"
+```Python
+def audit_street_type(street_name,mapping):
+    m = street_type_re.search(street_name)
+    if m:
+        street_type = m.group()
+        if street_type not in expected:
+            print street_type
+            street_name=update_name(street_name,mapping)
+            print street_name
+    return street_name
+    
+def update_name(name, mapping):
+    m=street_type_re.search(name)
+    if m.group() in mapping.keys():
+        name=name[:len(name)-len(m.group())]+mapping[m.group()]
+    return name
+    
+  ```
+  
  
 #### Cardinal Directions
 A typical inconsistency found in addresses is the representation of a given cardinal direction. I tested for this in the Miami OSM sample database under the way/node tags and found a number of variations in the street name values. For example, North is written as: N,N., and North.
