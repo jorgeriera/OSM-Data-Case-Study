@@ -1,76 +1,161 @@
-# OpenStreetMap Data Case Study
+ OpenStreetMap Data Case Study
 
 ### Map Area
 Miami,Florida, United States
 
 - [https://www.openstreetmap.org/#map=12/25.7588/-80.2180](https://www.openstreetmap.org/#map=12/25.7588/-80.2180)
 
-This is a map of my hometown from an open source mapping site called OpenStreetMap. Users are able to contribute to the map as they see fit. Given that it is a collaborative map, it is especially prone to human error. I would like to access the quality of the data for this subsect and determine if there are any necessary changes. 
+This is a map of my hometown from an open source mapping site called OpenStreetMap. Users are able to contribute to the map as they see fit. Given that it is a collaborative map, it is especially prone to human error. I would like to access the quality of the data for this subsect and determine if there are any necessary changes.
 
+## Initial Inspection
+#### Boundary
 
-## Problems Encountered in the Map
-After initially downloading a small sample size of the Charlotte area and running it against a provisional data.py file, I noticed five main problems with the data, which I will discuss in the following order:
+The first thing I did after loading the dataset was to check if the node values were within the boundaries of the map. First I found the boundary element from the XML source file I was working with, and I found the maximum and minimum values for latitude/longitude. Then I looped through each node element and compared the lat/lon values to their respective values. This test did not yield any errors.
 
-
-- Over­abbreviated street names *(“S Tryon St Ste 105”)*
-- Inconsistent postal codes *(“NC28226”, “28226­0783”, “28226”)*
-- “Incorrect” postal codes (Charlotte area zip codes all begin with “282” however a large portion of all documented zip codes were outside this region.)
-- Second­ level `“k”` tags with the value `"type"`(which overwrites the element’s previously processed `node[“type”]field`).
-- Street names in second ­level `“k”` tags pulled from Tiger GPS data and divided into segments, in the following format:
-
-	```XML
-	<tag k="tiger:name_base" v="Stonewall"/> 
-	<tag k="tiger:name_direction_prefix" v="W"/> 
-	<tag k="tiger:name_type" v="St"/>
+```XML
+	<bounds minlat="25.6692244" minlon="-80.4231834" maxlat="25.87093" maxlon="-80.115347"/>
 	```
 
-### Over­abbreviated Street Names
-Once the data was imported to SQL, some basic querying revealed street name abbreviations and postal code inconsistencies. To deal with correcting street names, I opted not use regular expressions, and instead iterated over each word in an address, correcting them to their respective mappings in audit.py using the following function:
+```Python
+def map_boundary(filename):
+    for _, element in ET.iterparse(filename):
+        if element.tag == "bounds":
+            minlat=float(element.attrib['minlat'])
+            minlon=float(element.attrib['minlon'])
+            maxlat=float(element.attrib['maxlat'])
+            maxlon=float(element.attrib['maxlon'])
+            #print y['minlat']
+            return minlat,minlon,maxlat,maxlon
 
-```python 
-def update(name, mapping): 
-	words = name.split()
-	for w in range(len(words)):
-		if words[w] in mapping:
-			if words[w­1].lower() not in ['suite', 'ste.', 'ste']: 
-				# For example, don't update 'Suite E' to 'Suite East'
-				words[w] = mapping[words[w]] name = " ".join(words)
-	return name
+def boundary_check(filename):
+    errors={'wrong_coordinates':0}
+    minlat,minlon,maxlat,maxlon=map_boundary(filename)
+    for _, element in ET.iterparse(filename):
+        if element.tag == "node":
+            if (float(element.attrib['lat'])<minlat) or (float(element.attrib['lat'])>maxlat):
+                print element.attrib['lat']
+                break
+                errors['wrong_coordinates']+=1
+            elif (float(element.attrib['lon'])<minlon) or (float(element.attrib['lon'])>maxlon):
+                errors['wrong_coordinates']+=1
+    return errors
+```
+#### Street Names
+
+Next I checked for inconsistencies in street names.
+
+```Python
+street_type_re = re.compile(r'\b\S+\.?$', re.IGNORECASE)
+
+
+expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square", "Lane", "Road",
+            "Trail", "Parkway", "Commons","Causeway","Passage","Way",'Circle','Highway','Plaza','Terrace']
+
+
+mapping = { "St": "Street",
+            "St.": "Street",
+            "Ave": "Avenue",
+            "Rd.": "Road",
+            "Ave.": "Avenue",
+            "Cirlce": "Circle",
+            "Hwy": "Highway",
+            "Dr": "Drive",
+            "PL": "Place",
+            "Blvd":"Boulevard"
+            }
+
+
+def audit_street_type(street_types, street_name):
+    m = street_type_re.search(street_name)
+    if m:
+        street_type = m.group()
+        if street_type not in expected:
+            street_types[street_type].add(street_name)
+    return street_types
+
+
+def is_street_name(elem):
+    return (elem.attrib['k'] == "addr:street")
+
+
+def audit(osmfile):
+    osm_file = open(osmfile, "r")
+    street_types = defaultdict(set)
+    for event, elem in ET.iterparse(osm_file, events=("start",)):
+
+        if elem.tag == "node" or elem.tag == "way":
+            for tag in elem.iter("tag"):
+                if is_street_name(tag):
+                    audit_street_type(street_types, tag.attrib['v'])
+    osm_file.close()
+    return street_types.keys()
+
 ```
 
-This updated all substrings in problematic address strings, such that:
-*“S Tryon St Ste 105”*
-becomes:
-*“South Tryon Street Suite 105”*
+I found a number of discrepancies in the naming conventions of street name values. I found the following exceptions:
 
-### Postal Codes
-Postal code strings posed a different sort of problem, forcing a decision to strip all leading and trailing characters before and after the main 5­digit zip code. This effectively dropped all leading state characters (as in “NC28226”) and 4­digit zip code extensions following a hyphen (“28226­0783”). This 5­digit restriction allows for more consistent queries.
+|Exceptions|    |       |
+|---	|---	|---	|
+| St. 	|  Dr	|  	Ct|
+| Rd 	|  PL	|  Ave	|
+|  Pl	| Ave. 	| Blvd 	|
+| Hwy 	|  St	| ST 	|
+
+After singling out what had to be changed, I mapped out what each exception value should be replaced to and corrected the inconsistencies:
+
+"INSERT HERE"
+ 
+#### Cardinal Directions
+A typical inconsistency found in addresses is the representation of a given cardinal direction. I tested for this in the Miami OSM sample database under the way/node tags and found a number of variations in the street name values. For example, North is written as: N,N., and North.
+
+```Python
+direction=['Southwest','Southeast','Northwest','Northeast', 'North','South','East','West']
+
+direction_mapping={"N.W.": "Northwest",
+            "N.E": "Northeast",
+            "S.E.": "Southeast",
+            "S.W.": "Southwest",
+            "NW": "Northwest",
+            "NE": "Northeast",
+            "SW": "Southwest",
+            "SE": "Southeast",
+            "N": "North",
+            "S": "South",
+            "W": "West",
+            "E": "East",
+            "N.": "North",
+            "S.": "South",
+            "W.": "West",
+            "E.": "East",
+            }
 
 
-Regardless, after standardizing inconsistent postal codes, some altogether “incorrect” (or perhaps misplaced?) postal codes surfaced when grouped together with this aggregator:
+def audit_street_type(street_types, street_name):
+    m = street_type_re.search(street_name)
+    if m:
+        street_type = m.group()
+        if street_type not in expected:
+            street_types[street_type].add(street_name)
+    return street_types
 
-```sql
-SELECT tags.value, COUNT(*) as count 
-FROM (SELECT * FROM nodes_tags 
-	  UNION ALL 
-      SELECT * FROM ways_tags) tags
-WHERE tags.key='postcode'
-GROUP BY tags.value
-ORDER BY count DESC;
-```
 
-Here are the top ten results, beginning with the highest count:
+def is_street_name(elem):
+    return (elem.attrib['k'] == "addr:street")
 
-```sql
-value|count
-28205|900
-28208|388
-28206|268
-28202|204
-28204|196
-28216|174
-28211|148
-28203|120
-28209|104
-28207|86
-```
+
+def audit(osmfile):
+    audit_direction=set()
+    osm_file = open(osmfile, "r")
+    for event, elem in ET.iterparse(osm_file, events=("start",)):
+        if elem.tag == "node" or elem.tag == "way":
+            for tag in elem.iter("tag"):
+
+                if is_street_name(tag) and (tag.attrib['v'].split(' ')[0] not in direction) and (len(tag.attrib['v'].split(' ')[0])<5):
+                    audit_direction.update([tag.attrib['v'].split(' ')[0]])
+                    
+    osm_file.close()
+    return audit_direction
+    ```
+
+
+abbv_direction=['N.W.','N.E.','S.E.','S.W.','NW','NE','SW','SE','N','S','W','E','N.','S.','E.','W.']
