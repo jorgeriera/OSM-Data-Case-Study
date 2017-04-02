@@ -184,3 +184,13 @@ if is_street_name(tag) and (tag.attrib['v'].split(' ')[0] not in abbv_direction
                     and tag.attrib['v'].split(' ')[0] not in direction) and (len(tag.attrib['v'].split(' ')[0])<5):
                     audit_direction.update([tag.attrib['v'].split(' ')[0])
 ```
+After singling out possible variations, I standardized the data using the update_direction function:
+
+```Python
+def update_direction(name,mapping):
+    name_val=name.attrib['v']
+    abbv=name.attrib['v'].split(' ')[0]
+    name=mapping[abbv]+name_val[len(abbv):]
+    return name
+```
+
