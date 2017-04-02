@@ -155,7 +155,14 @@ def audit(osmfile):
                     
     osm_file.close()
     return audit_direction
-    ```
+```
+    
+After running this code I singled out which values were cardinal directions and added these to a new list called abbv_direction. I modified my code to exclude any results from this new list. The new audit function did not yield any new abbreviated values. 
 
-
+```Python
 abbv_direction=['N.W.','N.E.','S.E.','S.W.','NW','NE','SW','SE','N','S','W','E','N.','S.','E.','W.']
+...
+if is_street_name(tag) and (tag.attrib['v'].split(' ')[0] not in abbv_direction 
+                    and tag.attrib['v'].split(' ')[0] not in direction) and (len(tag.attrib['v'].split(' ')[0])<5):
+                    audit_direction.update([tag.attrib['v'].split(' ')[0])
+```
