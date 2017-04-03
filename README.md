@@ -7,8 +7,7 @@ Miami,Florida, United States
 
 This is a map of my hometown from an open source mapping site called OpenStreetMap. Users are able to contribute to the map as they see fit. Given that it is a collaborative map, it is especially prone to human error. I would like to access the quality of the data for this subsect and determine if there are any necessary changes.
 
-## Initial Inspection
-#### Boundary
+### Boundary
 
 The first thing I did after loading the dataset was to check if the node values were within the boundaries of the map. First I found the boundary element from the XML source file I was working with, and I found the maximum and minimum values for latitude/longitude. Then I looped through each node element and compared the lat/lon values to their respective values. This test did not yield any errors.
 
@@ -40,7 +39,7 @@ def boundary_check(filename):
                 errors['wrong_coordinates']+=1
     return errors
 ```
-#### Street Names
+### Street Names
 
 Next I checked for inconsistencies in street names.
 
@@ -123,7 +122,7 @@ def update_name(name, mapping):
   ```
   
  
-#### Cardinal Directions
+### Cardinal Directions
 A typical inconsistency found in addresses is the representation of a given cardinal direction. I tested for this in the Miami OSM sample database under the way/node tags and found a number of variations in the street name values. For example, North is written as: N,N., and North.
 
 ```Python
