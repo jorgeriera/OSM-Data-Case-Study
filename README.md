@@ -259,7 +259,7 @@ juanpinillos,7
 ```
 The top 10 contributers of restaurant data accounted for 75% of the entries.
 
-###Roadster
+### Roadster
 Users with most highway data submissions
 ```SQL
 select user, count(*) as total 
