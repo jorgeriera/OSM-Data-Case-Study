@@ -193,7 +193,7 @@ def update_direction(name,mapping):
     return name
 ```
 ## Exploring Data
-The following section is an overview of the technical specificaitons of the Miami OSM dataset as well some findings from my data querying.
+The following section is an overview of the technical specifications of the Miami OSM dataset as well some findings from my data querying.
 
 ### File sizes
 ```
@@ -257,7 +257,7 @@ thetornado76,8
 GoWestTravel,7
 juanpinillos,7
 ```
-The top 10 contributers of restaurant data accounted for 75% of the entries.
+The top 10 contributors of restaurant data accounted for 75% of the entries.
 
 ### Roadsters
 Users with most highway data submissions
@@ -281,7 +281,7 @@ dufekin,502
 DaveHansenTiger,355
 maxolasersquad,346
 ```
-The top 10 contributers accounted for 75% of the entries.
+The top 10 contributors accounted for 75% of the entries.
 
 ### Other Ideas
 The OSM website imports part of its data from the United States Census Bureau. It seems like there are issues in the formatting of the zipcodes from this data. This can be seen below:
@@ -308,7 +308,7 @@ tiger,33126:33172;33172,12
 tiger,"33155:33158:33158; 33143; 33158",12
 tiger,"33155:33158; 33143; 33158",12
 ```
-It seems like this data needs to be cleaned more thoughouly prior to posting onto the OSM site. One solution is to read through all of the tiger values and split based on given string length. Anything after the fifth character would be dropped in this case. The query above shows entries that have various zipcodes under the same tag. In this case, the data would need to be cross referenced to ensure that the resulting entry is accurate.
+It seems like this data needs to be cleaned more throughly prior to posting onto the OSM site. One solution is to read through all of the tiger values and split based on given string length. Anything after the fifth character would be dropped in this case. The query above shows entries that have various zipcodes under the same tag. In this case, the data would need to be cross referenced to ensure that the resulting entry is accurate.
 
 ## Conclusion
-After reviewing the Miami OSM data, it seems like the data is uniform throughout. There are some areas that can be improved such as naming conventions used for street names and cardinal directions. Those changes were made for the purpose of this case study but have not been submitted to the OSM project. Further investigation into the dataset uncovered the need to clean values for postal codes that originate from Tiger data. A well constructed function would be able to fullfill the aforemention changes and improve the uniformity of the dataset. 
+After reviewing the Miami OSM data, it seems like the data is uniform throughout. There are some areas that can be improved such as naming conventions used for street names and cardinal directions. Those changes were made for the purpose of this case study but have not been submitted to the OSM project. Further investigation into the dataset uncovered the need to clean values for postal codes that originate from Tiger data. A well constructed function would be able to fulfill the aforementioned changes and improve the uniformity of the dataset. 
