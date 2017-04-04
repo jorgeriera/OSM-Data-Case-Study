@@ -259,7 +259,7 @@ juanpinillos,7
 ```
 The top 10 contributers of restaurant data accounted for 75% of the entries.
 
-### Roadster
+### Roadsters
 Users with most highway data submissions
 ```SQL
 select user, count(*) as total 
@@ -283,4 +283,29 @@ maxolasersquad,346
 ```
 The top 10 contributers accounted for 75% of the entries.
 
-
+### Other Ideas
+The OSM website imports part of its data from the United States Census Bureau. It seems like there are issues in the formatting of the zipcodes from this data. This can be seen below:
+```SQL
+SELECT tags.type, tags.value,  COUNT(*) as count 
+FROM (SELECT * FROM nodes_tags 
+	  UNION ALL 
+      SELECT * FROM ways_tags) tags
+WHERE tags.key='zip_left' or tags.key='zip_right'
+GROUP BY tags.value
+ORDER BY count DESC;
+```
+```SQL
+tiger,33010:33142,48
+tiger,33147:33150,32
+tiger,33150:33168,24
+tiger,33133:33134:33135,20
+tiger,33133:33135:33145,18
+tiger,33176:33186,16
+tiger,33176:33186;33176,15
+tiger,"33172; 33178",14
+tiger,33012:33166,12
+tiger,33126:33172;33172,12
+tiger,"33155:33158:33158; 33143; 33158",12
+tiger,"33155:33158; 33143; 33158",12
+```
+It seems like this data needs to be cleaned more thoughouly prior to posting onto the OSM site. One solution is to read through all of the tiger values and split based on given string length. Anything after the fifth character would be dropped in this case. The query above shows entries that have various zipcodes under the same tag. In this case, the data would need to be cross referenced to ensure that the resulting entry is accurate.
