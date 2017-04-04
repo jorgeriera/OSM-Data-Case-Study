@@ -313,7 +313,7 @@ It seems like this data needs to be cleaned more throughly prior to posting onto
 ## Cost/Benefits of Cleaning Zipcode Values
 One potential downside to systematically cleaning the zipcode values is that relevant data may be eliminated in the process. Basic zip codes in the United States contain 5 digits but each address has an additional four digits that can be used to specify a locality in cases of redudancies. Another potential issue is that the wrong zipcode could be selected from entries that list multiple values. Even with validation checks in place, if the source also has an incorrect value it could translate to faulty map data. 
 
-While there are potential downsides to standardizing the zipcode data, there are clear benefits. From a data analytics standard point, it would be easier to 
+While there are potential downsides to standardizing the zipcode data, there are clear benefits. From a data analytics standpoint, it would allow us to draw more accurate insights from the dataset. For example, one could conclusively report which zipcode has the most restaurants. Or which zipcode has the most traffic signals. There are countless benefits of this type of standardization.
 
 ## Conclusion
 After reviewing the Miami OSM data, it seems like the data is uniform throughout. There are some areas that can be improved such as naming conventions used for street names and cardinal directions. Those changes were made for the purpose of this case study but have not been submitted to the OSM project. Further investigation into the dataset uncovered the need to clean values for postal codes that originate from Tiger data. A well constructed function would be able to fulfill the aforementioned changes and improve the uniformity of the dataset. 
