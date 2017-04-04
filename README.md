@@ -1,4 +1,4 @@
- OpenStreetMap Data Case Study
+# OpenStreetMap Data Case Study
 
 ### Map Area
 Miami,Florida, United States
@@ -309,3 +309,6 @@ tiger,"33155:33158:33158; 33143; 33158",12
 tiger,"33155:33158; 33143; 33158",12
 ```
 It seems like this data needs to be cleaned more thoughouly prior to posting onto the OSM site. One solution is to read through all of the tiger values and split based on given string length. Anything after the fifth character would be dropped in this case. The query above shows entries that have various zipcodes under the same tag. In this case, the data would need to be cross referenced to ensure that the resulting entry is accurate.
+
+## Conclusion
+After reviewing the Miami OSM data, it seems like the data is uniform throughout. There are some areas that can be improved such as naming conventions used for street names and cardinal directions. Those changes were made for the purpose of this case study but have not been submitted to the OSM project. Further investigation into the dataset uncovered the need to clean values for postal codes that originate from Tiger data. A well constructed function would be able to fullfill the aforemention changes and improve the uniformity of the dataset. 
