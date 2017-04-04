@@ -192,4 +192,95 @@ def update_direction(name,mapping):
     name=mapping[abbv]+name_val[len(abbv):]
     return name
 ```
+## Exploring Data
+The following section is an overview of the technical specificaitons of the Miami OSM dataset as well some findings from my data querying.
+
+### File sizes
+```
+miami.osm ............ 169.3 MB
+miami_osm.db .......... 95.8 MB
+nodes.csv ............. 63.2 MB
+nodes_tags.csv ........ 2.6 MB
+ways.csv .............. 6.4 MB
+ways_tags.csv ......... 16.8 MB
+ways_nodes.cv ......... 19.6 MB  
+```  
+
+### Number of Unique Users
+```SQL
+select count(subq.uid)
+FROM (select uid
+from ways
+UNION
+select uid
+from nodes)as subq;
+```
+749
+### Number of Nodes
+```SQL
+select count(*)
+from nodes;
+```
+699776
+### Number of Ways
+```SQL
+select count(*)
+from ways;
+```
+96949
+### Number of Schools
+```SQL
+select count(*) as total
+from nodes_tags 
+where value='school';
+```
+635
+### Foodies
+Users with the most restaurant submissions
+```SQL
+select user, count(*) as total 
+from nodes join nodes_tags 
+on nodes.id=nodes_tags.id 
+where value='restaurant' 
+group by user 
+order by total desc limit 10;
+```
+```SQL
+"Quyen Tran",48
+wegavision,20
+IvoSan,19
+SpikeJ,13
+igfc,13
+ErnieAtLYD,10
+Extrabrandt,10
+thetornado76,8
+GoWestTravel,7
+juanpinillos,7
+```
+The top 10 contributers of restaurant data accounted for 75% of the entries.
+
+###Roadster
+Users with most highway data submissions
+```SQL
+select user, count(*) as total 
+from ways join ways_tags 
+on ways.id=ways_tags.id 
+where key='highway' 
+group by user 
+order by total desc limit 10;
+```
+```SQL
+bot-mode,8910
+carciofo,4795
+grouper,2902
+NE2,1082
+IvoSan,1071
+georafa,741
+Trex2001,739
+dufekin,502
+DaveHansenTiger,355
+maxolasersquad,346
+```
+The top 10 contributers accounted for 75% of the entries.
+
 
