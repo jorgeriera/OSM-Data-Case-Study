@@ -13,7 +13,7 @@ The first thing I did after loading the dataset was to check if the node values 
 
 ```XML
 	<bounds minlat="25.6692244" minlon="-80.4231834" maxlat="25.87093" maxlon="-80.115347"/>
-	```
+```
 
 ```Python
 def map_boundary(filename):
