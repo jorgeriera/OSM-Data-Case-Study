@@ -19,22 +19,22 @@ The first thing I did after loading the dataset was to check if the node values 
 def map_boundary(filename):
     for _, element in ET.iterparse(filename):
         if element.tag == "bounds":
-            minlat=float(element.attrib['minlat'])
-            minlon=float(element.attrib['minlon'])
-            maxlat=float(element.attrib['maxlat'])
-            maxlon=float(element.attrib['maxlon'])
-            return minlat,minlon,maxlat,maxlon
+            minlat = float(element.attrib['minlat'])
+            minlon = float(element.attrib['minlon'])
+            maxlat = float(element.attrib['maxlat'])
+            maxlon = float(element.attrib['maxlon'])
+            return minlat, minlon, maxlat, maxlon
 
 def boundary_check(filename):
-    errors={'wrong_coordinates':0}
-    minlat,minlon,maxlat,maxlon=map_boundary(filename)
+    errors = {'wrong_coordinates':0}
+    minlat, minlon, maxlat, maxlon = map_boundary(filename)
     for _, element in ET.iterparse(filename):
         if element.tag == "node":
-            if (float(element.attrib['lat'])<minlat) or (float(element.attrib['lat'])>maxlat):
+            if (float(element.attrib['lat']) < minlat) or (float(element.attrib['lat']) > maxlat):
                 print element.attrib['lat']
-                errors['wrong_coordinates']+=1
-            elif (float(element.attrib['lon'])<minlon) or (float(element.attrib['lon'])>maxlon):
-                errors['wrong_coordinates']+=1
+                errors['wrong_coordinates'] += 1
+            elif (float(element.attrib['lon']) < minlon) or (float(element.attrib['lon']) > maxlon):
+                errors['wrong_coordinates'] += 1
     return errors
 ```
 ### Street Names
@@ -46,7 +46,7 @@ street_type_re = re.compile(r'\b\S+\.?$', re.IGNORECASE)
 
 
 expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square", "Lane", "Road",
-            "Trail", "Parkway", "Commons","Causeway","Passage","Way",'Circle','Highway','Plaza','Terrace']
+            "Trail", "Parkway", "Commons", "Causeway", "Passage", "Way", "Circle", "Highway", "Plaza", "Terrace"]
 
 
 mapping = { "St": "Street",
@@ -79,7 +79,6 @@ def audit(osmfile):
     osm_file = open(osmfile, "r")
     street_types = defaultdict(set)
     for event, elem in ET.iterparse(osm_file, events=("start",)):
-
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
                 if is_street_name(tag):
@@ -101,20 +100,20 @@ I found a number of discrepancies in the naming conventions of street name value
 After singling out what had to be changed, I mapped out what each exception value should be replaced to and corrected the inconsistencies:
 
 ```Python
-def audit_street_type(street_name,mapping):
+def audit_street_type(street_name, mapping):
     m = street_type_re.search(street_name)
     if m:
         street_type = m.group()
         if street_type not in expected:
             print street_type
-            street_name=update_name(street_name,mapping)
+            street_name = update_name(street_name, mapping)
             print street_name
     return street_name
     
 def update_name(name, mapping):
     m=street_type_re.search(name)
     if m.group() in mapping.keys():
-        name=name[:len(name)-len(m.group())]+mapping[m.group()]
+        name = name[:len(name)-len(m.group())] + mapping[m.group()]
     return name
     
   ```
@@ -124,7 +123,7 @@ def update_name(name, mapping):
 A typical inconsistency found in addresses is the representation of a given cardinal direction. I tested for this in the Miami OSM sample database under the way/node tags and found a number of variations in the street name values. For example, North is written as: N,N., and North.
 
 ```Python
-direction=['Southwest','Southeast','Northwest','Northeast', 'North','South','East','West']
+direction=['Southwest', 'Southeast', 'Northwest', 'Northeast', 'North', 'South', 'East', 'West']
 
 direction_mapping={"N.W.": "Northwest",
             "N.E": "Northeast",
@@ -141,7 +140,7 @@ direction_mapping={"N.W.": "Northwest",
             "N.": "North",
             "S.": "South",
             "W.": "West",
-            "E.": "East",
+            "E.": "East"
             }
 
 
@@ -164,8 +163,8 @@ def audit(osmfile):
     for event, elem in ET.iterparse(osm_file, events=("start",)):
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
-
-                if is_street_name(tag) and (tag.attrib['v'].split(' ')[0] not in direction) and (len(tag.attrib['v'].split(' ')[0])<5):
+                if is_street_name(tag) and (tag.attrib['v'].split(' ')[0] not in direction) and 
+		    (len(tag.attrib['v'].split(' ')[0]) < 5):
                     audit_direction.update([tag.attrib['v'].split(' ')[0]])
                     
     osm_file.close()
@@ -175,19 +174,19 @@ def audit(osmfile):
 After running this code I singled out which values were cardinal directions and added these to a new list called abbv_direction. I modified my code to exclude any results from this new list. The new audit function did not yield any new abbreviated values. 
 
 ```Python
-abbv_direction=['N.W.','N.E.','S.E.','S.W.','NW','NE','SW','SE','N','S','W','E','N.','S.','E.','W.']
+abbv_direction=['N.W.',  'N.E.', 'S.E.', 'S.W.', 'NW', 'NE', 'SW', 'SE', 'N', 'S', 'W', 'E', 'N.', 'S.', 'E.', 'W.']
 ...
 if is_street_name(tag) and (tag.attrib['v'].split(' ')[0] not in abbv_direction 
-                    and tag.attrib['v'].split(' ')[0] not in direction) and (len(tag.attrib['v'].split(' ')[0])<5):
+                    and tag.attrib['v'].split(' ')[0] not in direction) and (len(tag.attrib['v'].split(' ')[0]) < 5):
                     audit_direction.update([tag.attrib['v'].split(' ')[0])
 ```
 After singling out possible variations, I standardized the data using the update_direction function:
 
 ```Python
 def update_direction(name,mapping):
-    name_val=name.attrib['v']
-    abbv=name.attrib['v'].split(' ')[0]
-    name=mapping[abbv]+name_val[len(abbv):]
+    name_val = name.attrib['v']
+    abbv = name.attrib['v'].split(' ')[0]
+    name = mapping[abbv]+name_val[len(abbv):]
     return name
 ```
 ## Exploring Data
@@ -206,42 +205,42 @@ ways_nodes.cv ......... 19.6 MB
 
 ### Number of Unique Users
 ```SQL
-select count(subq.uid)
+SELECT COUNT(subq.uid)
 FROM (select uid
-from ways
+FROM ways
 UNION
-select uid
-from nodes)as subq;
+SELECT
+FROM nodes)as subq;
 ```
 749
 ### Number of Nodes
 ```SQL
-select count(*)
-from nodes;
+SELECT count(*)
+FROM nodes;
 ```
 699776
 ### Number of Ways
 ```SQL
-select count(*)
-from ways;
+SELECT count(*)
+FROM ways;
 ```
 96949
 ### Number of Schools
 ```SQL
-select count(*) as total
-from nodes_tags 
-where value='school';
+SELECT count(*) as total
+FROM nodes_tags 
+WHERE value = 'school';
 ```
 635
 ### Foodies
 Users with the most restaurant submissions
 ```SQL
-select user, count(*) as total 
-from nodes join nodes_tags 
-on nodes.id=nodes_tags.id 
-where value='restaurant' 
-group by user 
-order by total desc limit 10;
+SELECT user, COUNT(*) as total 
+FROM nodes JOIN nodes_tags 
+ON nodes.id = nodes_tags.id 
+WHERE value = 'restaurant' 
+GROUP BY user 
+ORDER BY total DESC LIMIT 10;
 ```
 ```SQL
 "Quyen Tran",48
@@ -260,12 +259,12 @@ The top 10 contributors of restaurant data accounted for 75% of the entries.
 ### Roadsters
 Users with most highway data submissions
 ```SQL
-select user, count(*) as total 
-from ways join ways_tags 
-on ways.id=ways_tags.id 
-where key='highway' 
-group by user 
-order by total desc limit 10;
+SELECT user, COUNT(*) as total 
+FROM ways JOIN ways_tags 
+ON ways.id = ways_tags.id 
+WHERE key = 'highway' 
+GROUP BY user 
+ORDER BY total DESC LIMIT 10;
 ```
 ```SQL
 bot-mode,8910
@@ -288,7 +287,7 @@ SELECT tags.type, tags.value,  COUNT(*) as count
 FROM (SELECT * FROM nodes_tags 
 	  UNION ALL 
       SELECT * FROM ways_tags) tags
-WHERE tags.key='zip_left' or tags.key='zip_right'
+WHERE tags.key = 'zip_left' or tags.key = 'zip_right'
 GROUP BY tags.value
 ORDER BY count DESC;
 ```
