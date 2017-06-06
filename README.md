@@ -31,7 +31,6 @@ def boundary_check(filename):
     for _, element in ET.iterparse(filename):
         if element.tag == "node":
             if (float(element.attrib['lat']) < minlat) or (float(element.attrib['lat']) > maxlat):
-                print element.attrib['lat']
                 errors['wrong_coordinates'] += 1
             elif (float(element.attrib['lon']) < minlon) or (float(element.attrib['lon']) > maxlon):
                 errors['wrong_coordinates'] += 1
