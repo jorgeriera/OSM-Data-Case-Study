@@ -23,7 +23,6 @@ def map_boundary(filename):
             minlon=float(element.attrib['minlon'])
             maxlat=float(element.attrib['maxlat'])
             maxlon=float(element.attrib['maxlon'])
-            #print y['minlat']
             return minlat,minlon,maxlat,maxlon
 
 def boundary_check(filename):
@@ -33,7 +32,6 @@ def boundary_check(filename):
         if element.tag == "node":
             if (float(element.attrib['lat'])<minlat) or (float(element.attrib['lat'])>maxlat):
                 print element.attrib['lat']
-                break
                 errors['wrong_coordinates']+=1
             elif (float(element.attrib['lon'])<minlon) or (float(element.attrib['lon'])>maxlon):
                 errors['wrong_coordinates']+=1
