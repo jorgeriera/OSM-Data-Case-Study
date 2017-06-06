@@ -45,7 +45,8 @@ street_type_re = re.compile(r'\b\S+\.?$', re.IGNORECASE)
 
 
 expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square", "Lane", "Road",
-            "Trail", "Parkway", "Commons", "Causeway", "Passage", "Way", "Circle", "Highway", "Plaza", "Terrace"]
+            "Trail", "Parkway", "Commons", "Causeway", "Passage", "Way", "Circle", "Highway", "Plaza", 
+	    "Terrace"]
 
 
 mapping = { "St": "Street",
