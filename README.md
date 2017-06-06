@@ -5,7 +5,7 @@ Miami,Florida, United States
 
 - [https://www.openstreetmap.org/#map=12/25.7588/-80.2180](https://www.openstreetmap.org/#map=12/25.7588/-80.2180)
 
-This is a map of my hometown from an open source mapping site called OpenStreetMap. Users are able to contribute to the map as they see fit. Given that it is a collaborative map, it is especially prone to human error. I would like to access the quality of the data for this subsect and determine if there are any necessary changes.
+This is a map of my hometown from an open source mapping site called OpenStreetMap. Users are able to contribute to the map as they see fit. Given that it is a collaborative map, it is especially prone to human error. I would like to assess the quality of the data for this subsect and determine if there are any necessary changes.
 
 ### Boundary
 
@@ -119,7 +119,7 @@ def update_name(name, mapping):
   
  
 ### Cardinal Directions
-A typical inconsistency found in addresses is the representation of a given cardinal direction. I tested for this in the Miami OSM sample database under the way/node tags and found a number of variations in the street name values. For example, North is written as: N,N., and North.
+A typical inconsistency found in addresses is the representation of a given cardinal direction. I tested for this in the Miami OSM sample database under the way/node tags and found a number of variations in the street name values. For example, North is written as: N, N., and North.
 
 ```Python
 direction=['Southwest', 'Southeast', 'Northwest', 'Northeast', 'North', 'South', 'East', 'West']
@@ -312,4 +312,4 @@ One potential downside to systematically cleaning the zipcode values is that rel
 While there are potential downsides to standardizing the zipcode data, there are clear benefits. From a data analytics standpoint, it would allow us to draw more accurate insights from the dataset. For example, one could conclusively report which zipcode has the most restaurants. Or which zipcode has the most traffic signals. There are countless benefits of this type of standardization.
 
 ## Conclusion
-After reviewing the Miami OSM data, it seems like the data is uniform throughout. There are some areas that can be improved such as naming conventions used for street names and cardinal directions. Those changes were made for the purpose of this case study but have not been submitted to the OSM project. Further investigation into the dataset uncovered the need to clean values for postal codes that originate from Tiger data. A well constructed function would be able to fulfill the aforementioned changes and improve the uniformity of the dataset. 
+After reviewing the Miami OSM data, I found that most of the data is uniform throughout. There are some areas that can be improved such as naming conventions used for street names and cardinal directions. Those changes were made for the purpose of this case study, but have not been submitted to the OSM project. Further investigation into the dataset uncovered the need to clean values for postal codes that originate from Tiger data. A well constructed function would be able to fulfill the aforementioned changes and improve the uniformity of the dataset. 
